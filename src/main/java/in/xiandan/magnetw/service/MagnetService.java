@@ -101,6 +101,8 @@ public class MagnetService {
             option.setSort(supportedSorts.get(0).getSort());
         }
 
+        String url = formatSiteUrl(source, option.getKeyword(), option.getSort(), option.getPage());
+        option.setSiteUrl(url);
         return option;
     }
 
@@ -159,16 +161,23 @@ public class MagnetService {
         return new DomSerializer(new CleanerProperties()).createDOM(node);
     }
 
+    public String formatSiteUrl(MagnetRule rule, String keyword, String sort, int page) {
+        if (StringUtils.isEmpty(keyword)){
+            return rule.getUrl();
+        }
+        //用页码和关键字 拼接源站的url
+        //部分源站顺序不一致，2.1.1以后使用替换的形式
+        String sortPath = ruleService.getPathBySort(sort, rule.getPaths()).replace("%s", keyword).replace("%d", String.valueOf(page));
+        return String.format("%s%s", rule.getUrl(), sortPath);
+    }
+
     @Cacheable(value = "magnetList", key = "T(String).format('%s-%s-%s-%d',#rule.url,#keyword,#sort,#page)")
     public List<MagnetItem> parser(MagnetRule rule, String keyword, String sort, int page, String userAgent) throws MagnetParserException, IOException {
         if (StringUtils.isEmpty(keyword)) {
             return new ArrayList<MagnetItem>();
         }
 
-        //用页码和关键字 拼接源站的url
-        //部分源站顺序不一致，2.1.1以后使用替换的形式
-        String sortPath = ruleService.getPathBySort(sort, rule.getPaths()).replace("%s", keyword).replace("%d", String.valueOf(page));
-        String url = String.format("%s%s", rule.getUrl(), sortPath);
+        String url = formatSiteUrl(rule, keyword, sort, page);
 
         //请求源站
         try {
@@ -328,6 +337,9 @@ public class MagnetService {
      * @return
      */
     private String transformMagnet(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return url;
+        }
         String regex = "magnet:?[^\\\"]+";
         boolean matches = Pattern.matches(regex, url);
         if (matches) {

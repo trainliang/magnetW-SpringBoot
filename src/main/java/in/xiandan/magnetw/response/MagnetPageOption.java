@@ -9,6 +9,7 @@ public class MagnetPageOption {
     private String keyword;
     private String site;
     private String sort;
+    private String siteUrl;
 
     private String userAgent;
 
@@ -50,5 +51,13 @@ public class MagnetPageOption {
 
     public void setSort(String sort) {
         this.sort = sort;
+    }
+
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
     }
 }

@@ -20,7 +20,7 @@ public class MagnetPageSiteSort {
         } else if (SORT_OPTION_HOT.equals(this.sort)) {
             this.sortName = "下载人气";
         } else if (SORT_OPTION_TIME.equals(this.sort)) {
-            this.sortName = "创建时间";
+            this.sortName = "更新时间";
         } else if (SORT_OPTION_DEFAULT.equals(this.sort)) {
             this.sortName = "默认排序";
         }

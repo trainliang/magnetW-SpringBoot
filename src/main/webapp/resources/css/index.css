@@ -1,5 +1,5 @@
 #app {
-    padding: 2% 6% 0 6%;
+    padding: 2% 5% 0 5%;
     margin: 0 auto;
 }
 
@@ -22,7 +22,14 @@ a {
 }
 
 .header-row {
-    height: 30px;
+    max-height: 30px;
+}
+
+.header-row .el-row {
+    margin: 0 auto;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .header-row a {
@@ -89,7 +96,7 @@ a {
     text-align: right;
 }
 
-.empty-message{
+.empty-message {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -178,8 +185,8 @@ a {
 }
 
 .el-tab-small .el-tabs__item {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 13px;
+    padding-right: 13px;
     line-height: 35px;
     height: 35px;
     font-size: 13px;
@@ -241,7 +248,7 @@ a {
     border-color: #666;
 }
 
-.detail-popup .el-dialog__title{
+.detail-popup .el-dialog__title {
     word-break: break-all; /**两端对齐**/
 }
 
@@ -253,4 +260,17 @@ a {
 .detail-popup-error {
     text-align: center;
     color: #f56c6c;
+}
+
+.option-left .el-button {
+    margin-right: 5px;
+    margin-left: 0;
+}
+
+.multiple-selection-message {
+    margin-right: 10px;
+}
+
+.multiple-selection-item-name {
+    margin-bottom: 5px;
 }

@@ -13,6 +13,9 @@ new Vue({
         sortBy: null,
         rule: null,
         successMessage: null,
+        //选中的item
+        multipleSelection: [],
+
         //举报
         filter: {
             message: "如果你发现有违规的搜索结果，可以在此处提交，提交后将会禁止搜索此关键词，也可以在更多按钮中举报资源",
@@ -73,8 +76,10 @@ new Vue({
                 if (source == null || source.length <= 0) {
                     for (let i = 0; i < this.sourceSites.length; i++) {
                         //列表也包含上次选的源站 就自动选择上次的源站
-                        if (this.setting.source === this.sourceSites[i].site) {
-                            this.current.site = this.setting.source;
+                        let sourceSite = this.sourceSites[i];
+                        if (this.setting.source === sourceSite.site) {
+                            this.current.site = sourceSite.site;
+                            this.current.siteUrl = sourceSite.url;
                             break
                         }
                     }
@@ -117,7 +122,9 @@ new Vue({
             this.requestMagnetList(true)
         },
         handleClickMagnet(url) {
-            this.status.clicks.push(url)
+            if (this.status.clicks.indexOf(url) === -1) {
+                this.status.clicks.push(url)
+            }
         },
         /**
          * 请求列表
@@ -172,6 +179,17 @@ new Vue({
                 that.detail.errorMessage = '加载失败';
             });
         },
+        /**
+         * 批量复制
+         */
+        handleBatchCopy() {
+            let batchUrl = "";
+            for (let i = 0; i < this.multipleSelection.length; i++) {
+                batchUrl = batchUrl + this.multipleSelection[i].magnet + "\n"
+            }
+            this.$copyText(batchUrl)
+            this.handleCopy()
+        },
         handleCopy() {
             this.onToastMessage('复制成功', 'success');
         },
@@ -197,6 +215,7 @@ new Vue({
                     const data = response.body.data;
                     this.trackersString = data.trackersString;
                     this.rule = data.rule;
+                    this.current = data.current;
                     console.log("callback - onRequestSuccess");
                     this.onRequestSuccess(response.body)
                 } else {
@@ -289,6 +308,12 @@ new Vue({
          * @param message
          */
         onToastMessage(message, type) {
+
+        },
+        /**
+         * 点击item的回调
+         */
+        handleClickItem(e) {
 
         }
 

@@ -11,6 +11,7 @@
     <title>磁力搜 - 开源的磁力聚合搜索</title>
     <meta name="viewport"
           content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="description" content="磁力搜是一个聚合搜索磁力链接的引擎">
     <meta name="robots" content="noarchive">
     <meta name="robots" content="noindex,follow">
 
@@ -29,7 +30,7 @@
 <div v-cloak id="app">
     <el-container>
         <!--头-->
-        <el-header class="header-row" style="height: 30px">
+        <el-header class="header-row">
             <el-row>
                 <!--左边-->
                 <el-col :span="12">
@@ -67,12 +68,26 @@
                 <!--选项-->
                 <el-row class="option-row">
                     <!--左边-->
-                    <el-col :span="12">
-                        <a v-if="config.reportEnabled" @click="showReportDialog"
-                           class="report-link">自助举报</a>
+                    <el-col :span="12" class="option-left">
+                        <span v-show="multipleSelection.length>0">
+                             <el-popover
+                                     placement="bottom"
+                                     trigger="hover">
+                            <span slot="reference" class="multiple-selection-message">当前选中：{{multipleSelection.length}}个</span>
+                                 <div class="multiple-selection-item-name"
+                                      v-for="ms in multipleSelection">{{ms.name}}</div>
+                            </el-popover>
+                            <el-button class="multiple-selection-button" size="mini"
+                                       @click="handleBatchCopy">批量复制</el-button>
+                        </span>
+                        <a class="el-button el-button--default el-button--mini"
+                           :href="current.siteUrl" target="_blank">去源站</a>
+                        <el-button size="mini" v-if="config.reportEnabled"
+                                   @click="showReportDialog">自助举报
+                        </el-button>
                     </el-col>
                     <!--右边-->
-                    <el-col :span="config.reportEnabled?12:24" class="option-right">
+                    <el-col :span="12" class="option-right">
                         <el-checkbox class="remember-source" v-model="setting.memoryChoice"
                                      label="记住上次选择的源站"
                                      @change="onChangeMemoryChoice"/>
@@ -145,12 +160,18 @@
                         </el-row>
                     </div>
                     <el-table
+                            @selection-change="handleSelectionChange"
+                            @cell-click="handleClickItem"
                             ref="tableWrapper"
                             size="mini"
                             :data="list"
                             border
                             style="width: 100%">
                         <div slot="empty" class="empty-message">{{message}}</div>
+                        <el-table-column
+                                type="selection"
+                                width="35">
+                        </el-table-column>
                         <el-table-column
                                 width="50"
                                 type="index">
@@ -170,13 +191,13 @@
                                             type="success" size="mini">{{scope.row.resolution}}
                                     </el-tag>
                                 </template>
-                                <a v-if="status.clicks.indexOf(scope.row.magnet)!=-1"
-                                   class="visited-a"
+                                <a v-if="scope.row.magnet"
+                                   :class="status.clicks.indexOf(scope.row.magnet)!=-1?'visited-a':''"
                                    :href="scope.row.magnet"
-                                   v-html="scope.row.nameHtml"></a>
-                                <a v-else :href="scope.row.magnet"
                                    @click="handleClickMagnet(scope.row.magnet)"
                                    v-html="scope.row.nameHtml"></a>
+                                <span v-else
+                                      v-html="scope.row.nameHtml"></span>
                             </template>
                         </el-table-column>
                         <el-table-column
@@ -203,7 +224,7 @@
                                 width="140">
                             <template slot-scope="scope">
                                 <el-popover
-                                        placement="left-start"
+                                        placement="left"
                                         trigger="hover">
                                     <h3 class="more-action-title">更多操作</h3>
                                     <div class="more-action-button">
@@ -335,6 +356,12 @@
             this.requestMagnetList(true)
         };
 
+
+        //点击item的回调
+        vue.handleSelectionChange = function (val) {
+            vue._data.multipleSelection = val;
+        };
+
         /************重写的回调************/
 
 
@@ -369,6 +396,14 @@
                         duration: 2000
                     });
                 }
+            }
+        };
+
+
+        //点击item的回调
+        vue.handleClickItem = function (row, column, cell, event) {
+            if (column.label !== '名称' && column.label !== '操作') {
+                vue.$refs.tableWrapper.toggleRowSelection(row);
             }
         };
 

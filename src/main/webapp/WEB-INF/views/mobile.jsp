@@ -11,6 +11,7 @@
     <title>磁力搜 - 开源的磁力聚合搜索</title>
     <meta name="viewport"
           content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <meta name="description" content="磁力搜是一个聚合搜索磁力链接的引擎">
     <meta name="robots" content="noarchive">
     <meta name="robots" content="noindex,follow">
 
@@ -107,11 +108,14 @@
                             </van-tag>
                         </template>
 
-                        <a v-if="status.clicks.indexOf(it.magnet)!=-1" class="visited-a"
+
+                        <a v-if="it.magnet"
+                           :class="status.clicks.indexOf(it.magnet)!=-1?'visited-a':''"
                            :href="it.magnet"
+                           @click="handleClickMagnet(it.magnet)"
                            v-html="it.nameHtml"></a>
-                        <a v-else :href="it.magnet" @click="handleClickMagnet(it.magnet)"
-                           v-html="it.nameHtml"></a>
+                        <span v-else
+                              v-html="it.nameHtml"></span>
                     </div>
 
                     <van-row>
